@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8f9fa;
+            color: #2d3436;
+        }
+
+        /* Navigation */
+        .main-nav {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-login {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-login:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-logout {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: #f1f3f5;
+            border-radius: 30px;
+        }
+
+        /* Login Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            color: #95a5a6;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1rem;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Form */
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .portfolio-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .portfolio-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .card-image {
+            width: 100%;
+            aspect-ratio: 16/12;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 25px;
+        }
+
+        .card-category {
+            color: #667eea;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .card-description {
+            color: #636e72;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .admin-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .btn-edit {
+            background: #667eea;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.98);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox.show {
+            display: flex;
+        }
+
+        .lightbox-content {
+            display: flex;
+            width: 90%;
+            max-width: 1300px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            max-height: 85vh;
+        }
+
+        .lightbox-image-section {
+            flex: 1.2;
+            background: #0a0a0a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+        }
+
+        .lightbox-info {
+            flex: 0.8;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .lightbox-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .lightbox-category {
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 30px;
+            margin-bottom: 25px;
+        }
+
+        .lightbox-description {
+            color: #636e72;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            width: 100px;
+            color: #95a5a6;
+        }
+
+        .detail-value {
+            color: #2d3436;
+            font-weight: 500;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tag {
+            background: #f1f3f5;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+        }
+
+        .close-lightbox {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 60px 20px 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .lightbox-content {
+                flex-direction: column;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="switchToGallery(); return false;">Portfolio</a>
+            <div class="nav-right">
+                <!-- Login Button (visible when not logged in) -->
+                <button id="loginBtn" class="nav-btn btn-login" onclick="openLoginModal()">เข้าสู่ระบบ</button>
+                
+                <!-- User Menu (visible when logged in) -->
+                <div id="userMenu" style="display: none;">
+                    <div class="user-badge">
+                        <span id="userName">👤 Admin</span>
+                        <button class="nav-btn btn-primary" onclick="switchToAdmin()">จัดการผลงาน</button>
+                        <button class="nav-btn btn-logout" onclick="logout()">ออกจากระบบ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div id="heroSection" class="hero">
+        <h1>ผลงาน</h1>
+        <p style="color: #636e72;">เลือกดูผลงาน</p>
+    </div>
+
+    <!-- Gallery View -->
+    <div id="galleryView">
+        <div id="galleryContainer" class="gallery-grid"></div>
+    </div>
+
+    <!-- Admin View (hidden by default) -->
+    <div id="adminView" style="display: none;">
+        <div class="admin-panel">
+            <div class="section-title">
+                <h2>จัดการผลงาน</h2>
+                <button class="btn-primary" onclick="showAddForm()">+ เพิ่มผลงานใหม่</button>
+            </div>
+
+            <!-- Form -->
+            <div id="portfolioForm" class="form-container hidden">
+                <h3 id="formTitle" style="margin-bottom: 20px;">เพิ่มผลงานใหม่</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>ชื่อโครงการ</label>
+                        <input type="text" id="projectTitle" class="form-control" placeholder="ชื่อโครงการ">
+                    </div>
+                    <div class="form-group">
+                        <label>หมวดหมู่</label>
+                        <select id="projectCategory" class="form-control">
+                            <option value="">-- เลือกโปรแกรมที่ใช้ --</option>
+                            <option value="Procreate">🎨 Procreate</option>
+                            <option value="Adobe Illustrator">📐 AI (Illustrator)</option>
+                            <option value="Adobe Photoshop">🖼️ PS (Photoshop)</option>
+                            <option value="Adobe After Effects">🎬 AE (After Effects)</option>
+                            <option value="Autodesk Maya">🎭 Maya</option>
+                            <option value="Blender">🌀 Blender</option>
+                            <option value="Cinema 4D">🎮 Cinema 4D</option>
+                            <option value="Figma">🎯 Figma</option>
+                            <option value="Adobe Lightroom">📸 Lightroom</option>
+                            <option value="Adobe InDesign">📄 InDesign</option>
+                            <option value="Adobe Premiere Pro">🎥 Premiere Pro</option>
+                            <option value="CorelDRAW">✏️ CorelDRAW</option>
+                        </select>
+                       </div>
+                    <div class="form-group">
+                        <label>ลูกค้า</label>
+                        <input type="text" id="projectClient" class="form-control" placeholder="ชื่อลูกค้า">
+                    </div>
+                    <div class="form-group">
+                        <label>ปีที่ทำ</label>
+                        <input type="text" id="projectYear" class="form-control" placeholder="2024">
+                    </div>
+                    <div class="form-group">
+                        <label>บทบาท</label>
+                        <input type="text" id="projectRole" class="form-control" placeholder="บทบาท">
+                    </div>
+                    <div class="form-group">
+                        <label>URL รูปภาพ</label>
+                        <input type="text" id="projectImage" class="form-control" placeholder="https://...">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>คำอธิบายสั้น</label>
+                        <textarea id="projectShortDesc" class="form-control" placeholder="คำอธิบายสั้นๆ"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>คำอธิบายเต็ม</label>
+                        <textarea id="projectFullDesc" class="form-control" placeholder="รายละเอียดเต็ม"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Tags (คั่นด้วย ,)</label>
+                        <input type="text" id="projectTags" class="form-control" placeholder="Logo, Packaging, Branding">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; margin-top: 20px;">
+                    <button class="btn-primary" onclick="savePortfolio()">บันทึก</button>
+                    <button class="nav-btn btn-login" style="background: #95a5a6; color: white; border: none;" onclick="cancelForm()">ยกเลิก</button>
+                </div>
+            </div>
+
+            <!-- Admin Portfolio List -->
+            <div id="adminPortfolioList"></div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>เข้าสู่ระบบ</h2>
+                <button class="close-modal" onclick="closeLoginModal()">&times;</button>
+            </div>
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" id="loginUsername" value="">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" value="">
+            </div>
+            <button class="login-btn" onclick="handleLogin()">เข้าสู่ระบบ</button>
+            <div id="loginError" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <button class="close-lightbox" onclick="closeLightbox()">&times;</button>
+        <div class="lightbox-content">
+            <div class="lightbox-image-section">
+                <img id="lightboxImg" class="lightbox-image" src="" alt="">
+            </div>
+            <div id="lightboxInfo" class="lightbox-info"></div>
+        </div>
+    </div>
+
+    <script>
+        // ================ ข้อมูล Portfolio ================
+        let portfolioData = [];
+
+        // โหลดข้อมูล
+        function loadData() {
+            const saved = localStorage.getItem('portfolioData');
+            if (saved) {
+                portfolioData = JSON.parse(saved);
+            } else {
+                portfolioData = [
+                    {
+                        id: 1,
+                        title: "Eco Brand Identity",
+                        category: "Branding",
+                        client: "GreenLeaf Organics",
+                        year: "2024",
+                        role: "Lead Designer",
+                        shortDesc: "Complete brand identity system for organic food company.",
+                        fullDesc: "Logo design, packaging system, brand guidelines, and digital assets.",
+                        image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=800",
+                        tags: ["Logo Design", "Packaging", "Brand Guidelines"]
+                    },
+                    {
+                        id: 2,
+                        title: "FinTech Mobile App",
+                        category: "UI/UX Design",
+                        client: "MoneyFlow",
+                        year: "2024",
+                        role: "UI/UX Designer",
+                        shortDesc: "Mobile banking application for Gen Z users.",
+                        fullDesc: "Clean interface with intuitive navigation and custom illustrations.",
+                        image: "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800",
+                        tags: ["UI Design", "UX Research", "Mobile App"]
+                    },
+                    {
+                        id: 3,
+                        title: "Art Magazine Layout",
+                        category: "Editorial",
+                        client: "Contemporary Art Review",
+                        year: "2023",
+                        role: "Art Director",
+                        shortDesc: "Quarterly art magazine redesign.",
+                        fullDesc: "Custom typography and flexible grid systems.",
+                        image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800",
+                        tags: ["Editorial", "Typography", "Print Design"]
+                    }
+                ];
+                saveData();
+            }
+            renderGallery();
+        }
+
+        // บันทึกข้อมูล
+        function saveData() {
+            localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
+        }
+
+        // ================ ระบบ Login ================
+        let isLoggedIn = false;
+
+        function checkLoginStatus() {
+            const status = localStorage.getItem('isLoggedIn');
+            isLoggedIn = status === 'true';
+            
+            if (isLoggedIn) {
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('userMenu').style.display = 'block';
+            } else {
+                document.getElementById('loginBtn').style.display = 'block';
+                document.getElementById('userMenu').style.display = 'none';
+                switchToGallery();
+            }
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('show');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('show');
+            document.getElementById('loginError').innerHTML = '';
+        }
+
+       // รายชื่อผู้ใช้
+        const users = [
+            { username: "Boom", password: "Boom", name: "Boom" },
+            { username: "Nice", password: "Nice", name: "Nice" },
+            { username: "admin", password: "1234", name: "Admin" }
+        ];
+
+        function handleLogin() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // ค้นหาผู้ใช้ (ไม่สนตัวพิมพ์เล็กใหญ่)
+            const user = users.find(u => 
+                u.username.toLowerCase() === username.toLowerCase() && 
+                u.password === password
+            );
+            
+            if (user) {
+                isLoggedIn = true;
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('currentUser', user.name);
+                
+                // เปลี่ยนชื่อผู้ใช้
+                document.getElementById('userName').innerHTML = `👤 ${user.name}`;
+                
+                closeLoginModal();
+                checkLoginStatus();
+                switchToAdmin();
+                alert(`ยินดีต้อนรับคุณ ${user.name}`);
+            } else {
+                document.getElementById('loginError').innerHTML = 'Username หรือ Password ไม่ถูกต้อง';
+            }
+        }
+        function logout() {
+            isLoggedIn = false;
+            localStorage.setItem('isLoggedIn', 'false');
+            checkLoginStatus();
+            switchToGallery();
+            alert('ออกจากระบบสำเร็จ');
+        }
+
+        // ================ สลับมุมมอง ================
+        function switchToGallery() {
+            document.getElementById('galleryView').style.display = 'block';
+            document.getElementById('adminView').style.display = 'none';
+            renderGallery();
+        }
+
+        function switchToAdmin() {
+            if (!isLoggedIn) {
+                openLoginModal();
+                return;
+            }
+            document.getElementById('galleryView').style.display = 'none';
+            document.getElementById('adminView').style.display = 'block';
+            renderAdminList();
+        }
+
+        // ================ แสดง Gallery ================
+        function renderGallery() {
+            const container = document.getElementById('galleryContainer');
+            let html = '';
+            
+            portfolioData.forEach(item => {
+                html += `
+                    <div class="portfolio-card" onclick="openLightbox(${item.id})">
+                        <img src="${item.image}" alt="${item.title}" class="card-image">
+                        <div class="card-content">
+                            <div class="card-category">${item.category}</div>
+                            <h3 class="card-title">${item.title}</h3>
+                            <p class="card-description">${item.shortDesc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // ================ Admin ================
+        function renderAdminList() {
+            const container = document.getElementById('adminPortfolioList');
+            let html = '<div class="gallery-grid">';
+            
+            portfolioData.forEach(item => {
+                html += `
+                    <div class="portfolio-card">
+                        <div class="admin-badge">
+                            <button class="btn-edit" onclick="editPortfolio(${item.id}); event.stopPropagation();">แก้ไข</button>
+                            <button class="btn-delete" onclick="deletePortfolio(${item.id}); event.stopPropagation();">ลบ</button>
+                        </div>
+                        <img src="${item.image}" alt="${item.title}" class="card-image">
+                        <div class="card-content">
+                            <div class="card-category">${item.category}</div>
+                            <h3 class="card-title">${item.title}</h3>
+                            <p class="card-description">${item.shortDesc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function showAddForm() {
+            document.getElementById('formTitle').innerHTML = 'เพิ่มผลงานใหม่';
+            document.getElementById('projectTitle').value = '';
+            document.getElementById('projectCategory').value = 'Branding';
+            document.getElementById('projectClient').value = '';
+            document.getElementById('projectYear').value = new Date().getFullYear();
+            document.getElementById('projectRole').value = '';
+            document.getElementById('projectImage').value = '';
+            document.getElementById('projectShortDesc').value = '';
+            document.getElementById('projectFullDesc').value = '';
+            document.getElementById('projectTags').value = '';
+            
+            document.getElementById('portfolioForm').classList.remove('hidden');
+            delete document.getElementById('portfolioForm').dataset.editingId;
+        }
+
+        function editPortfolio(id) {
+            const item = portfolioData.find(p => p.id === id);
+            if (item) {
+                document.getElementById('formTitle').innerHTML = 'แก้ไขผลงาน';
+                document.getElementById('projectTitle').value = item.title;
+                document.getElementById('projectCategory').value = item.category;
+                document.getElementById('projectClient').value = item.client;
+                document.getElementById('projectYear').value = item.year;
+                document.getElementById('projectRole').value = item.role;
+                document.getElementById('projectImage').value = item.image;
+                document.getElementById('projectShortDesc').value = item.shortDesc;
+                document.getElementById('projectFullDesc').value = item.fullDesc;
+                document.getElementById('projectTags').value = item.tags.join(', ');
+                
+                document.getElementById('portfolioForm').classList.remove('hidden');
+                document.getElementById('portfolioForm').dataset.editingId = id;
+            }
+        }
+
+        function savePortfolio() {
+            const title = document.getElementById('projectTitle').value;
+            const category = document.getElementById('projectCategory').value;
+            const client = document.getElementById('projectClient').value;
+            const year = document.getElementById('projectYear').value;
+            const role = document.getElementById('projectRole').value;
+            const image = document.getElementById('projectImage').value;
+            const shortDesc = document.getElementById('projectShortDesc').value;
+            const fullDesc = document.getElementById('projectFullDesc').value;
+            const tagsStr = document.getElementById('projectTags').value;
+            
+            if (!title || !image) {
+                alert('กรุณากรอกชื่อโครงการและURLรูปภาพ');
+                return;
+            }
+            
+            const tags = tagsStr.split(',').map(t => t.trim()).filter(t => t);
+            const editingId = document.getElementById('portfolioForm').dataset.editingId;
+            
+            if (editingId) {
+                const index = portfolioData.findIndex(p => p.id == editingId);
+                if (index !== -1) {
+                    portfolioData[index] = {
+                        ...portfolioData[index],
+                        title, category, client, year, role, image, shortDesc, fullDesc, tags
+                    };
+                }
+            } else {
+                const newId = Math.max(...portfolioData.map(p => p.id), 0) + 1;
+                portfolioData.push({
+                    id: newId,
+                    title, category, client, year, role, image, shortDesc, fullDesc, tags
+                });
+            }
+            
+            saveData();
+            cancelForm();
+            renderAdminList();
+            renderGallery();
+            alert('บันทึกข้อมูลเรียบร้อย');
+        }
+
+        function deletePortfolio(id) {
+            if (confirm('ต้องการลบผลงานนี้ใช่หรือไม่?')) {
+                portfolioData = portfolioData.filter(p => p.id !== id);
+                saveData();
+                renderAdminList();
+                renderGallery();
+                alert('ลบผลงานเรียบร้อย');
+            }
+        }
+
+        function cancelForm() {
+            document.getElementById('portfolioForm').classList.add('hidden');
+            delete document.getElementById('portfolioForm').dataset.editingId;
+        }
+
+        // ================ Lightbox ================
+        function openLightbox(id) {
+            const item = portfolioData.find(p => p.id === id);
+            if (item) {
+                document.getElementById('lightboxImg').src = item.image;
+                document.getElementById('lightboxInfo').innerHTML = `
+                    <h2 class="lightbox-title">${item.title}</h2>
+                    <span class="lightbox-category">${item.category}</span>
+                    <p class="lightbox-description">${item.fullDesc || item.shortDesc}</p>
+                    <div style="border-top: 1px solid #e9ecef; padding-top: 25px;">
+                        <div class="detail-row">
+                            <span class="detail-label">ลูกค้า</span>
+                            <span class="detail-value">${item.client}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">ปีที่ทำ</span>
+                            <span class="detail-value">${item.year}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">บทบาท</span>
+                            <span class="detail-value">${item.role}</span>
+                        </div>
+                        <div class="tags-container">
+                            ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                document.getElementById('lightbox').classList.add('show');
+            }
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('show');
+        }
+
+        // ================ เริ่มต้น ================
+        window.onload = function() {
+            loadData();
+            checkLoginStatus();
+        }
+    </script>
+</body>
+</html>
